@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Burntide vs JellyThin — Jun/26 | Grupo Fênix</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root{--bg:#0d0f14;--bg2:#141720;--bg3:#1c2030;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);--text:#f0f2f7;--muted:#8892a4;--muted2:#5a6478;--orange:#FF7B1C;--red:#ef4444;--amber:#f59e0b;--green:#22c55e;--blue:#3b82f6;--burn:#14b8a6;--jelly:#818cf8;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);padding-bottom:60px}
+  .topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+  .logo{width:30px;height:30px;background:var(--orange);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff}
+  .tl{display:flex;align-items:center;gap:14px}
+  .tt{font-size:14px;font-weight:600}.ts{font-size:11px;color:var(--muted)}
+  .badge{font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px;background:rgba(20,184,166,.14);color:var(--burn);border:1px solid rgba(20,184,166,.28)}
+  .page{max-width:1300px;margin:0 auto;padding:0 32px}
+  .hero{padding:36px 32px 0}
+  .hero h1{font-size:27px;font-weight:700}.hero h1 span{color:var(--orange)}
+  .hero-sub{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.6}
+  .sec{margin-top:32px}
+  .slbl{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .slbl::after{content:'';flex:1;height:1px;background:var(--border)}
+  /* pill */
+  .pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.3px}
+  .pb{background:rgba(20,184,166,.15);color:var(--burn);border:1px solid rgba(20,184,166,.25)}
+  .pj{background:rgba(129,140,248,.15);color:var(--jelly);border:1px solid rgba(129,140,248,.25)}
+  /* KPI grid 2 colunas */
+  .kgrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:14px;overflow:hidden;border:1px solid var(--border2)}
+  .khalf{background:var(--bg2);padding:20px 24px 18px}
+  .khdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .kname{font-size:13px;font-weight:600}.kdays{font-size:11px;color:var(--muted);margin-left:auto}
+  .krow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .klbl{font-size:11px;color:var(--muted);margin-bottom:4px}
+  .kval{font-size:22px;font-weight:700}.khint{font-size:11px;color:var(--muted2);margin-top:2px}
+  .cb{color:var(--burn)}.cj{color:var(--jelly)}.cr{color:var(--red)}.ca{color:var(--amber)}.cg{color:var(--green)}
+  /* cards */
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .card{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:20px 20px 16px}
+  .ct{font-size:13px;font-weight:600;margin-bottom:3px}.cs{font-size:11px;color:var(--muted);margin-bottom:14px}
+  .leg{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px}
+  .li{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+  .ld{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+  .cw{position:relative}
+  /* compare table */
+  .cmpw{overflow-x:auto;border-radius:12px;border:1px solid var(--border2)}
+  .cmp{width:100%;border-collapse:collapse;font-size:12.5px}
+  .cmp th{padding:11px 16px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border2);white-space:nowrap}
+  .cmp th:first-child{text-align:left;color:var(--muted);background:var(--bg2)}
+  .cmp th.bh{color:var(--burn);background:rgba(20,184,166,.06);text-align:center}
+  .cmp th.jh{color:var(--jelly);background:rgba(129,140,248,.06);text-align:center}
+  .cmp td{padding:10px 16px;border-bottom:1px solid var(--border)}
+  .cmp td:first-child{color:var(--muted);font-size:12px;background:var(--bg2)}
+  .cmp td.bv{text-align:center;background:rgba(20,184,166,.04);font-weight:600}
+  .cmp td.jv{text-align:center;background:rgba(129,140,248,.04);font-weight:600}
+  .cmp tr:last-child td{border-bottom:none}
+  .hlr td.bv,.hlr td.jv{background:rgba(239,68,68,.09)!important}
+  .hla td.bv,.hla td.jv{background:rgba(245,158,11,.07)!important}
+  /* data table */
+  .dt{width:100%;border-collapse:collapse;font-size:12.5px}
+  .dt th{text-align:left;padding:8px 12px;font-size:11px;font-weight:600;letter-spacing:.4px;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border2)}
+  .dt td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+  .dt tr:last-child td{border-bottom:none}
+  .dt tr:hover td{background:rgba(255,255,255,.02)}
+  .r{text-align:right;font-variant-numeric:tabular-nums}
+  .rh{color:var(--red);font-weight:700}.rm{color:var(--amber);font-weight:600}.rl{color:var(--green);font-weight:600}
+  .tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:5px}
+  .tgr{background:rgba(239,68,68,.15);color:#fca5a5}
+  .tgg{background:rgba(34,197,94,.15);color:#86efac}
+  .tga{background:rgba(245,158,11,.15);color:#fcd34d}
+  /* alerts */
+  .alerts{display:flex;flex-direction:column;gap:12px}
+  .alert{border-radius:10px;padding:14px 16px;border-left:3px solid}
+  .alr{background:rgba(239,68,68,.08);border-color:var(--red)}
+  .ala{background:rgba(245,158,11,.08);border-color:var(--amber)}
+  .alt{font-size:13px;font-weight:700;margin-bottom:5px}
+  .alr .alt{color:#fca5a5}.ala .alt{color:#fcd34d}
+  .alb{font-size:12px;color:var(--muted);line-height:1.65}
+  /* cohort table */
+  .ctbl{width:100%;border-collapse:collapse;font-size:12px}
+  .ctbl th{padding:8px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);border-bottom:1px solid var(--border2);text-align:center}
+  .ctbl th:first-child{text-align:left}
+  .ctbl td{padding:9px 12px;border-bottom:1px solid var(--border);text-align:center}
+  .ctbl td:first-child{text-align:left;font-weight:600}
+  .ctbl tr:last-child td{border-bottom:none}
+  .ctbl tr:hover td{background:rgba(255,255,255,.02)}
+  /* divider / footer */
+  .divl{height:1px;background:var(--border);margin:36px 0 0}
+  .foot{text-align:center;padding:24px 32px 0;font-size:11px;color:var(--muted2)}
+  @media(max-width:768px){.page,.hero{padding-left:16px;padding-right:16px}.kgrid,.g2,.g3{grid-template-columns:1fr}.krow{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tl">
+    <div class="logo">F</div>
+    <div><div class="tt">Grupo Fênix</div><div class="ts">Análise Operacional · BuyGoods</div></div>
+  </div>
+  <span class="badge">🌊 Primeiros 9 dias · Mesma janela</span>
+</div>
+
+<div class="hero page">
+  <h1>Burntide <span>vs</span> JellyThin</h1>
+  <div class="hero-sub">
+    <strong style="color:var(--burn)">Burntide</strong>: primeiros 9 dias de vida (10–18/jun/2026) &nbsp;·&nbsp;
+    <strong style="color:var(--jelly)">JellyThin</strong>: primeiros 9 dias de vida (15–23/mai/2026) &nbsp;·&nbsp;
+    Mesma janela temporal de lançamento · Fonte: BuyGoods exports
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- KPI -->
+  <div class="sec">
+    <div class="slbl">Resumo — primeiros 9 dias de vida de cada produto</div>
+    <div class="kgrid">
+      <div class="khalf">
+        <div class="khdr">
+          <span class="pill pb">Burntide</span>
+          <span class="kname">10–18/jun/2026</span>
+          <span class="kdays">9 dias de vida</span>
+        </div>
+        <div class="krow">
+          <div><div class="klbl">Entrada</div><div class="kval cb">$37,9k</div><div class="khint">143 pedidos</div></div>
+          <div><div class="klbl">AOV Fênix</div><div class="kval cb">$265</div><div class="khint">acima do Jelly D1-9</div></div>
+          <div><div class="klbl">Receita líq.</div><div class="kval cb">$30,2k</div><div class="khint">retenção 79,7%</div></div>
+          <div><div class="klbl">CB rate</div><div class="kval cr">28,7%</div><div class="khint">41 CBs · sem motivo</div></div>
+        </div>
+      </div>
+      <div class="khalf">
+        <div class="khdr">
+          <span class="pill pj">JellyThin D1–D9</span>
+          <span class="kname">15–23/mai/2026</span>
+          <span class="kdays">9 dias de vida</span>
+        </div>
+        <div class="krow">
+          <div><div class="klbl">Entrada</div><div class="kval cj">$80,3k</div><div class="khint">322 pedidos</div></div>
+          <div><div class="klbl">AOV Fênix</div><div class="kval cj">$249</div><div class="khint">primeiros 9 dias</div></div>
+          <div><div class="klbl">Receita líq.</div><div class="kval cj">$53,8k</div><div class="khint">retenção 67,0%</div></div>
+          <div><div class="klbl">Refund rate</div><div class="kval cr">37,0%</div><div class="khint">119 refunds · $24,1k</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS 1 -->
+  <div class="sec">
+    <div class="slbl">Composição operacional — mesma janela de 9 dias</div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct">Saída: refunds + chargebacks</div>
+        <div class="cs">Valores absolutos — JellyThin com 2× mais volume mas 5× mais refund</div>
+        <div class="leg">
+          <span class="li"><span class="ld" style="background:#ef4444"></span>Chargebacks</span>
+          <span class="li"><span class="ld" style="background:#3b82f6"></span>Refunds</span>
+        </div>
+        <div class="cw" style="height:220px"><canvas id="cSaida" role="img" aria-label="Saída por produto"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ct">Rates operacionais comparados</div>
+        <div class="cs">Mesma base percentual — apples to apples nos 9 primeiros dias</div>
+        <div class="leg">
+          <span class="li"><span class="ld" style="background:#14b8a6"></span>Burntide D1–9</span>
+          <span class="li"><span class="ld" style="background:#818cf8"></span>JellyThin D1–9</span>
+        </div>
+        <div class="cw" style="height:220px"><canvas id="cRates" role="img" aria-label="Rates operacionais"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURVAS DIÁRIAS -->
+  <div class="sec">
+    <div class="slbl">Curva de vendas — dia 1 ao dia 9 de cada produto</div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct">JellyThin — D1 a D9 (15–23/mai)</div>
+        <div class="cs">Crescimento acelerado do D6 ao D9 · pico no D9 (72 pedidos)</div>
+        <div class="leg">
+          <span class="li"><span class="ld" style="background:#818cf8"></span>Pedidos/dia</span>
+          <span class="li"><span class="ld" style="background:rgba(129,140,248,.35)"></span>Abaixo da média</span>
+        </div>
+        <div class="cw" style="height:200px"><canvas id="cJelly9" role="img" aria-label="Curva JellyThin 9 dias"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ct">Burntide — D1 a D9 (10–18/jun)</div>
+        <div class="cs">Rampa consistente · pico no D8 (27 pedidos)</div>
+        <div class="leg">
+          <span class="li"><span class="ld" style="background:#14b8a6"></span>Pedidos/dia</span>
+          <span class="li"><span class="ld" style="background:rgba(20,184,166,.35)"></span>Abaixo da média</span>
+        </div>
+        <div class="cw" style="height:200px"><canvas id="cBurn9" role="img" aria-label="Curva Burntide 9 dias"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABELA COMPARATIVA -->
+  <div class="sec">
+    <div class="slbl">Comparativo detalhado — primeiros 9 dias de vida</div>
+    <div class="cmpw">
+      <table class="cmp">
+        <thead>
+          <tr><th>Métrica</th><th class="bh">🌊 Burntide D1–9</th><th class="jh">🍮 JellyThin D1–9</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Período</td><td class="bv">10–18/jun/26</td><td class="jv">15–23/mai/26</td></tr>
+          <tr><td>Entrada total</td><td class="bv">$37.938</td><td class="jv">$80.283</td></tr>
+          <tr><td>Pedidos (convtype8)</td><td class="bv">143</td><td class="jv">322</td></tr>
+          <tr class="hla"><td>AOV Fênix</td><td class="bv ca">$265,30</td><td class="jv ca">$249,33</td></tr>
+          <tr><td>Receita líquida</td><td class="bv">$30.222</td><td class="jv">$53.785</td></tr>
+          <tr class="hla"><td>% Saída total</td><td class="bv ca">20,34%</td><td class="jv ca">33,01%</td></tr>
+          <tr><td>Refund total ($)</td><td class="bv cg">$0</td><td class="jv cr">$24.103</td></tr>
+          <tr class="hlr"><td>Refund rate (qtd)</td><td class="bv" style="color:#22c55e">0,00%</td><td class="jv" style="color:#ef4444;font-weight:700">36,96%</td></tr>
+          <tr><td>Chargeback total ($)</td><td class="bv cr">$7.716</td><td class="jv cr">$2.395</td></tr>
+          <tr class="hlr"><td>CB rate (qtd)</td><td class="bv" style="color:#ef4444;font-weight:700">28,67%</td><td class="jv" style="color:#f59e0b">2,80%</td></tr>
+          <tr class="hla"><td>Canceled (CS)</td><td class="bv ca">$15.930 / 72*</td><td class="jv ca">$30.462 / 122</td></tr>
+          <tr><td>Canceled rate (qtd)</td><td class="bv ca">50,3%*</td><td class="jv ca">37,9%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px">* Burntide canceled inclui 46 testes de cristihan. Excluindo: 26 pedidos / $6.668 / rate real 18,2%</div>
+  </div>
+
+  <!-- COHORT LOL_ADS -->
+  <div class="sec">
+    <div class="slbl">Cohort mensal LOL_ADS — vendas do mês vs saída sobre compras do mês</div>
+    <div class="g2" style="align-items:start">
+
+      <div class="card">
+        <div class="ct">LOL_ADS — cohort mensal correto</div>
+        <div class="cs">Vendas do mês ÷ refunds gerados sobre compras daquele mês (Order Date)</div>
+        <div class="cw" style="height:200px"><canvas id="cLol" role="img" aria-label="Cohort LOL_ADS mensal"></canvas></div>
+        <div style="margin-top:14px">
+          <table class="ctbl">
+            <thead>
+              <tr><th>Mês</th><th>Vendas</th><th>Qtd ped.</th><th>Refunds</th><th>Qtd ref.</th><th>Refund rate</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Mai/26</td>
+                <td>$159.388</td><td>659</td>
+                <td>$49.333</td><td>236</td>
+                <td class="rh">30,9%</td>
+              </tr>
+              <tr>
+                <td>Jun/26 <span class="tag tga">parcial</span></td>
+                <td>$130.599</td><td>553</td>
+                <td>$23.399</td><td>111</td>
+                <td class="rm">17,9%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">
+          Mai/26: taxa de 30,9% sobre compras de maio. Jun/26 ainda parcial (18 dias) — refunds de junho ainda em processamento, taxa deve subir nas próximas semanas.
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="ct">Cohort mensal — todos os top afiliados JellyThin</div>
+          <div class="cs">Refund rate por mês da compra (Order Date), não do processamento</div>
+          <div class="cw" style="height:210px"><canvas id="cCohortAll" role="img" aria-label="Cohort mensal afiliados"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="ct" style="margin-bottom:10px">JellyThin D1–9 — Motivos de refund</div>
+          <div class="cw" style="height:165px"><canvas id="cMotivos9" role="img" aria-label="Motivos refund JellyThin D1-9"></canvas></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ALERTAS + AFILIADOS -->
+  <div class="sec">
+    <div class="slbl">Afiliados e alertas</div>
+    <div class="g2" style="align-items:start">
+
+      <div>
+        <div class="card" style="margin-bottom:16px;padding:16px 18px">
+          <div class="ct" style="margin-bottom:10px">JellyThin D1–9 — Afiliados top (refund rate)</div>
+          <table class="dt">
+            <thead><tr><th>Afiliado</th><th class="r">Vendas</th><th class="r">Refs ($)</th><th class="r">Rate</th></tr></thead>
+            <tbody>
+              <tr><td>LOL_ADS<span class="tag tgr">block</span></td><td class="r">$50,9k</td><td class="r">$16,9k</td><td class="r rh">33,1%</td></tr>
+              <tr><td>LEONARDO OL.<span class="tag tgr">block</span></td><td class="r">$17,8k</td><td class="r">$5,4k</td><td class="r rh">30,1%</td></tr>
+              <tr><td>ghostrider56<span class="tag tgr">alto</span></td><td class="r">$346</td><td class="r">$286</td><td class="r rh">82,5%</td></tr>
+              <tr><td>gabsmartinii<span class="tag tgg">ok</span></td><td class="r">$4,2k</td><td class="r">$0</td><td class="r rl">0,0%</td></tr>
+              <tr><td>guifreitas<span class="tag tgg">ok</span></td><td class="r">$620</td><td class="r">$0</td><td class="r rl">0,0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="padding:16px 18px">
+          <div class="ct" style="margin-bottom:10px">Burntide — CBs por afiliado (D1–9)</div>
+          <table class="dt">
+            <thead><tr><th>Afiliado</th><th class="r">Vendas</th><th class="r">CB ($)</th><th class="r">CB qtd</th></tr></thead>
+            <tbody>
+              <tr><td>afiliado_futuro<span class="tag tgr">⚠</span></td><td class="r">$16,3k</td><td class="r cr">$4.321</td><td class="r rh">22</td></tr>
+              <tr><td>MuriloA</td><td class="r">$2,9k</td><td class="r ca">$768</td><td class="r rm">8</td></tr>
+              <tr><td>gabsmartinii</td><td class="r">$5,1k</td><td class="r">$579</td><td class="r">4</td></tr>
+              <tr><td>jefersonjfs</td><td class="r">$4,9k</td><td class="r">$588</td><td class="r">2</td></tr>
+              <tr><td>aproprianara</td><td class="r">—</td><td class="r">$588</td><td class="r">2</td></tr>
+              <tr><td>LOL_ADS</td><td class="r">$1,2k</td><td class="r">$527</td><td class="r">2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="alerts">
+        <div class="alert alr">
+          <div class="alt">⚠ Burntide — CB rate 28,67% nos primeiros 9 dias</div>
+          <div class="alb"><strong style="color:#fca5a5">afiliado_futuro</strong>: 43% das vendas, 22 dos 41 CBs ($4.321). Todos sem motivo e sem Chargeback Date válido. Bloquear créditos e cruzar Order IDs no painel BuyGoods antes de qualquer escala.</div>
+        </div>
+        <div class="alert ala">
+          <div class="alt">ℹ JellyThin D1–9 também abriu com refund rate alto (37%)</div>
+          <div class="alb">Padrão histórico confirmado: LOL_ADS entrou nos primeiros dias com rate de 33,1% e LEONARDO com 30,1%. O problema não é novo — é estrutural nestes afiliados. O mesmo risco existe no Burntide se eles entrarem sem cap.</div>
+        </div>
+        <div class="alert alr">
+          <div class="alt">⛔ LOL_ADS — cohort mensal mostra piora em maio</div>
+          <div class="alb">Compras de mai/26: $159k vendidos → 30,9% de refund rate (sobre os refunds já processados). Jun/26 com taxa atual de 17,9% mas parcial — vai subir. Padrão consistente entre meses: afiliado de alto volume e alto custo oculto.</div>
+        </div>
+        <div class="alert ala">
+          <div class="alt">→ Burntide tem melhor abertura que JellyThin em volume/pedido</div>
+          <div class="alb">Mesmo com menos pedidos (143 vs 322), o AOV é superior ($265 vs $249) e o refund rate é zero. O risco é o CB — mas é tratável. JellyThin abriu com refund rate de 37% desde o D1. Burntide está em posição melhor se o CB for controlado.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="divl"></div>
+<div class="foot">Grupo Fênix · Análise Operacional · Primeiros 9 dias de vida · Dados BuyGoods 18/06/2026</div>
+
+<script>
+Chart.defaults.color='#8892a4';
+Chart.defaults.borderColor='rgba(255,255,255,0.07)';
+Chart.defaults.font.family="'Segoe UI',system-ui,sans-serif";
+Chart.defaults.font.size=11;
+
+// Saída
+new Chart(document.getElementById('cSaida'),{type:'bar',data:{
+  labels:['Burntide D1–9','JellyThin D1–9'],
+  datasets:[
+    {label:'Chargebacks',data:[7716,2395],backgroundColor:'#ef4444',borderWidth:0,borderRadius:0},
+    {label:'Refunds',data:[0,24103],backgroundColor:'#3b82f6',borderWidth:0,borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.raw.toLocaleString('pt-BR')}}},
+  scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:12}}},y:{stacked:true,ticks:{callback:v=>'$'+(v/1000).toFixed(0)+'k'}}}}
+});
+
+// Rates
+new Chart(document.getElementById('cRates'),{type:'bar',data:{
+  labels:['% Saída total','CB rate','Refund rate','Canceled rate'],
+  datasets:[
+    {label:'Burntide D1–9',data:[20.3,28.7,0,50.3],backgroundColor:'#14b8a6',borderWidth:0,borderRadius:4},
+    {label:'JellyThin D1–9',data:[33.0,2.8,37.0,37.9],backgroundColor:'#818cf8',borderWidth:0,borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw.toFixed(1)+'%'}}},
+  scales:{x:{grid:{display:false},ticks:{font:{size:10},maxRotation:15}},y:{ticks:{callback:v=>v+'%'}}}}
+});
+
+// JellyThin 9 dias curva
+const jd=[31,32,33,23,23,20,52,36,72];
+const jAvg=jd.reduce((a,b)=>a+b,0)/jd.length;
+new Chart(document.getElementById('cJelly9'),{type:'bar',data:{
+  labels:['D1\n15mai','D2\n16mai','D3\n17mai','D4\n18mai','D5\n19mai','D6\n20mai','D7\n21mai','D8\n22mai','D9\n23mai'],
+  datasets:[{label:'Pedidos',data:jd,
+    backgroundColor:jd.map(v=>v>=jAvg?'#818cf8':'rgba(129,140,248,0.4)'),
+    borderWidth:0,borderRadius:4}]
+  },options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+' pedidos'}}},
+  scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{ticks:{stepSize:10}}}}
+});
+
+// Burntide 9 dias curva
+const bd=[9,19,11,24,15,12,18,27,8];
+const bAvg=bd.reduce((a,b)=>a+b,0)/bd.length;
+new Chart(document.getElementById('cBurn9'),{type:'bar',data:{
+  labels:['D1\n10jun','D2\n11jun','D3\n12jun','D4\n13jun','D5\n14jun','D6\n15jun','D7\n16jun','D8\n17jun','D9\n18jun'],
+  datasets:[{label:'Pedidos',data:bd,
+    backgroundColor:bd.map(v=>v>=bAvg?'#14b8a6':'rgba(20,184,166,0.4)'),
+    borderWidth:0,borderRadius:4}]
+  },options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+' pedidos'}}},
+  scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{ticks:{stepSize:5}}}}
+});
+
+// LOL cohort barras duplas
+new Chart(document.getElementById('cLol'),{type:'bar',data:{
+  labels:['Mai/26','Jun/26 (parcial)'],
+  datasets:[
+    {label:'Vendas ($k)',data:[159.4,130.6],backgroundColor:'rgba(129,140,248,0.55)',borderWidth:0,borderRadius:4,yAxisID:'y'},
+    {label:'Refunds ($k)',data:[49.3,23.4],backgroundColor:'#ef4444',borderWidth:0,borderRadius:4,yAxisID:'y'},
+  ]},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.raw+'k'}}},
+  scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>'$'+v+'k'}}}}
+});
+
+// Cohort todos afiliados
+new Chart(document.getElementById('cCohortAll'),{type:'bar',data:{
+  labels:['LOL_ADS\nmai','LOL_ADS\njun','LEONARDO\nmai','LEONARDO\njun','limarheuel\nmai','limarheuel\njun','afil.futuro\njun','guifreitas\njun'],
+  datasets:[{label:'Refund rate',
+    data:[30.9,17.9,24.8,20.9,23.6,11.6,20.7,12.6],
+    backgroundColor:d=>{const v=d.raw;return v>=25?'#ef4444':v>=15?'#f59e0b':'#22c55e'},
+    borderWidth:0,borderRadius:4
+  }]},options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw.toFixed(1)+'%'}}},
+  scales:{x:{grid:{display:false},ticks:{font:{size:9},maxRotation:30}},
+    y:{ticks:{callback:v=>v+'%'},suggestedMax:40}}}
+});
+
+// Motivos JellyThin D1-9
+new Chart(document.getElementById('cMotivos9'),{type:'doughnut',data:{
+  labels:['Chargeback alert','Threatened w/ CB',"Buyer's remorse","Doesn't remember",'Not happy','Outros'],
+  datasets:[{data:[39.2,14.2,10.3,5.6,4.4,26.3],
+    backgroundColor:['#ef4444','#f97316','#f59e0b','#8b5cf6','#3b82f6','#475569'],
+    borderWidth:0,hoverOffset:4}]
+  },options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw+'%'}}}}
+});
+</script>
+</body>
+</html>
